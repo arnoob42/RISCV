@@ -1,0 +1,72 @@
+import numpy as np
+import sys
+import random
+
+#Taking Dynamic No. of Input Variable
+#For Assignment its 5
+n=int(input("Enter the numbers of Unknown Variable:"))
+
+x=np.zeros(n)
+mat = np.zeros((n,n+1))
+
+print("Random Augmented Matrix Generated:")
+#Generation of Augmented Matrix
+for i in range(0,n):
+    for j in range(0,n+1):
+        mat[i][j]=float(random.randrange(-2**27, 2**27)/random.randrange(1, 2**16)) #setting random value to array
+        #checking of diagonal element not zero
+        #if zero, setting to random generated variable
+        #it'll run inside loop until a random variable not equal to zero is set
+        while(i==j and mat[i][i] == 0):
+            mat[i][j]=float(random.randrange(-2**27, 2**27)/random.randrange(1, 2**16)) #setting random value to array
+        if j!=n:
+            print(mat[i][j],end=" ")
+        else:
+            print(":",mat[i][j])
+            print("")
+            
+#Solving Augmented Matrix
+for i in range(0,n):
+    for j in range(i+1,n):
+        ratio = mat[j][i]/mat[i][i]
+        for k in range(0,n+1):
+            mat[j][k]=mat[j][k] - ratio* mat[i][k]
+            if k==j and mat[j][j] == 0:
+                print("No Soluton Exist!!!")
+                exit();
+                
+            
+print("Gaussian Matrix:\n",mat)
+# for i in range(0,n):
+#     for j in range(0,n+1):
+#         if j!=n:
+#             print(mat[i][j],end="    ")
+#         else:
+#             print(":",mat[i][j])
+#             print("")
+
+new_mat=  mat[:,:-1] #Slicing the matrix to get rank of matrix
+
+# print("NON AUgmented Matrix",new_mat)
+# print("rank>>>>>>",np.linalg.matrix_rank(mat)) 
+# print("rank2>>>>>>",np.linalg.matrix_rank(new_mat)) 
+
+if(np.linalg.matrix_rank(mat)>np.linalg.matrix_rank(new_mat)):
+    print("No Solution Exists!")
+    exit();
+elif(np.linalg.matrix_rank(mat)==np.linalg.matrix_rank(new_mat) and np.linalg.matrix_rank(mat)<n):
+    print("Infinitely many solution exist")
+    exit();
+else:
+    for i in range(n-1,-1,-1):
+        sumM=0.0
+        for j in range(n-1,i,-1):
+            #print("row {} index: {} mat value: {}  x value{}".format(i,j,mat[i][j],x[j]))
+            sumM=sumM+x[j]*mat[i][j]
+        #print("sum",sumM)
+        x[i]= (mat[i][n]-sumM)/mat[i][i]
+
+    # Displaying solution
+    print('\nRequired solution is: ')
+    for i in range(0,n):
+        print('X{} = {}'.format(i,x[i]), end = '\t')
